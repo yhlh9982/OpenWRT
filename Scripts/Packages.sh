@@ -9,8 +9,26 @@ UPDATE_PACKAGE() {
 	local REPO_NAME=$(echo $PKG_REPO | cut -d '/' -f 2)
 
 	rm -rf $(find ../feeds/luci/ ../feeds/packages/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune)
+# 移除要替换的包
+rm -rf feeds/packages/net/v2ray-geodata
+rm -rf feeds/packages/net/mosdns
+rm -rf feeds/luci/applications/luci-app-mosdns
+rm -rf feeds/packages/net/smartdns
+rm -rf feeds/packages/net/msd_lite
+rm -rf feeds/luci/themes/luci-theme-argon
+rm -rf feeds/luci/themes/luci-theme-netgear
+rm -rf feeds/luci/applications/luci-app-netdata
 
 	git clone --depth=1 --single-branch --branch $PKG_BRANCH "https://github.com/$PKG_REPO.git"
+#添加需要的插件
+#git clone --depth=1 https://github.com/kongfl888/luci-app-adguardhome package/luci-app-adguardhome
+#git clone --depth=1 https://github.com/ilxp/luci-app-ikoolproxy package/luci-app-ikoolproxy
+git clone --depth=1 https://github.com/esirplayground/luci-app-poweroff package/luci-app-poweroff
+#git clone --depth=1 https://github.com/destan19/OpenAppFilter package/OpenAppFilter
+git clone --depth=1 https://github.com/Jason6111/luci-app-netdata package/luci-app-netdata
+git clone --depth=1 https://github.com/ximiTech/luci-app-msd_lite package/luci-app-msd_lite
+git clone --depth=1 https://github.com/ximiTech/msd_lite package/msd_lite
+#git clone --depth=1 https://github.com/sbwml/luci-app-alist package/luci-app-alist
 
 	if [[ $PKG_SPECIAL == "pkg" ]]; then
 		cp -rf $(find ./$REPO_NAME/*/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune) ./
@@ -21,13 +39,28 @@ UPDATE_PACKAGE() {
 }
 
 #UPDATE_PACKAGE "包名" "项目地址" "项目分支" "pkg/name，可选，pkg为从大杂烩中单独提取包名插件；name为重命名为包名"
-UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "$([[ $WRT_REPO == *"lede"* ]] && echo "18.06" || echo "master")"
-UPDATE_PACKAGE "design" "0x676e67/luci-theme-design" "$([[ $WRT_REPO == *"lede"* ]] && echo "main" || echo "js")"
-UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "$([[ $WRT_REPO == *"lede"* ]] && echo "main" || echo "js")"
+UPDATE_PACKAGE "design" "gngpp/luci-theme-design" "js"
+UPDATE_PACKAGE "design-config" "gngpp/luci-app-design-config" "master"
+UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
+UPDATE_PACKAGE "argon-config" "jerrykuku/luci-app-argon-config" "master"
 
-UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
-UPDATE_PACKAGE "passwall" "xiaorouji/openwrt-passwall" "main"
-UPDATE_PACKAGE "ssr-plus" "fw876/helloworld" "master"
+#smartdns相关
+git clone --depth=1 https://github.com/pymumu/openwrt-smartdns package/smartdns
+git clone --depth=1 https://github.com/pymumu/luci-app-smartdns package/luci-app-smartdns
+#mosdns
+git clone --depth=1 https://github.com/sbwml/v2ray-geodata package/v2ray-geodata
+git clone --depth=1 -b 20.x https://github.com/sbwml/packages_lang_golang packages/lang/golang
+git clone --depth=1 -b v5 https://github.com/sbwml/luci-app-mosdns package/mosdns
+
+#科学插件
+git clone --depth=1 -b main https://github.com/fw876/helloworld package/luci-app-ssr-plus
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages package/openwrt-passwall
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
+#git clone --depth=1 -b luci-smartdns-dev https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
+git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2 package/luci-app-passwall2
+git clone --depth=1 -b master https://github.com/vernesong/OpenClash package/luci-app-openclash
+
+
 
 UPDATE_PACKAGE "advancedplus" "VIKINGYFY/luci-app-advancedplus" "main"
 UPDATE_PACKAGE "gecoosac" "lwb1978/openwrt-gecoosac" "main"
@@ -77,4 +110,4 @@ UPDATE_VERSION() {
 }
 
 #UPDATE_VERSION "软件包名" "测试版，true，可选，默认为否"
-UPDATE_VERSION "sing-box" "true"
+#UPDATE_VERSION "sing-box" "true"
